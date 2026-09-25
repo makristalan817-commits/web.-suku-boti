@@ -1,2 +1,2 @@
-# web.-suku-boti
+# web.suku-boti
 web
