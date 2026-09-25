@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edukasi Interaktif Suku Boti - Timor Tengah Selatan</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,600;0,800;1,600&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'boti-earth': '#2C1810',    /* Dark wood / Charcoal background */
+                        'boti-ochre': '#9E3B21',    /* Warm ochre red (Tenun dye) */
+                        'boti-amber': '#C66B27',    /* Terracotta / Amber */
+                        'boti-cream': '#F9F6F0',    /* Natural woven cotton white */
+                        'boti-card': '#23120B',     /* Darker contrast container */
+                        'boti-border': '#523023',   /* Accent border */
+                        'boti-highlight': '#E0A96D' /* Gold warm highlight */
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* WCAG AAA High Contrast & Focus Accessibility Styling */
+        body {
+            background-color: #1A0D08;
+            color: #F9F6F0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+        }
+        
+        *:focus-visible {
+            outline: 3px solid #E0A96D !important;
+            outline-offset: 3px;
+        }
+
+        .motif-pattern {
+            background-color: #2C1810;
+            background-image: radial-gradient(#9E3B21 1px, transparent 1px), radial-gradient(#C66B27 1px, #2C1810 1px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            background-opacity: 0.15;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1A0D08;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #9E3B21;
+            border-radius: 4px;
+        }
+
+        /* Node Pulse Effect for Graph Visualizer */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+        .active-node-anim {
+            animation: pulse-ring 2s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between custom-scrollbar bg-boti-earth text-boti-cream">
+
+    <!-- Top Persistent Navigation Bar (WCAG AAA Compliant) -->
+    <header class="sticky top-0 z-40 bg-[#150A06]/95 backdrop-blur-md border-b border-boti-border/80 shadow-lg px-4 py-3">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+            
+            <!-- Left: Logo & Brand -->
+            <div class="flex items-center space-x-3">
+                <button onclick="navigateTo('home')" aria-label="Kembali ke Beranda Suku Boti" class="group flex items-center space-x-2 focus:ring-2 focus:ring-boti-highlight rounded-lg p-1">
+                    <div class="w-10 h-10 rounded-lg bg-boti-ochre flex items-center justify-center font-bold text-xl shadow-md border border-boti-highlight/30 group-hover:bg-boti-amber transition">
+                        <i class="fa-solid fa-[#000] fa-campground text-boti-cream"></i>
+                    </div>
+                    <div class="text-left">
+                        <span class="font-serif text-lg font-bold tracking-wide text-boti-cream block leading-none">SUKU BOTI</span>
+                        <span class="text-xs text-boti-highlight tracking-wider uppercase font-semibold">TTS - Timor Tengah Selatan</span>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Middle: Anti-Disorientation Permanent Breadcrumb Trail -->
+            <nav aria-label="Breadcrumb Trail (Lokasi Saat Ini)" class="hidden md:flex items-center bg-boti-card px-4 py-2 rounded-full border border-boti-border text-sm">
+                <ol id="breadcrumb-list" class="flex items-center space-x-2 text-xs lg:text-sm font-medium">
+                    <!-- Dynamic Breadcrumbs rendered via JS -->
+                </ol>
+            </nav>
+
+            <!-- Right: Interactive Tools (Sitemap & Graph Modal Button) -->
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <button onclick="navigateTo('home')" class="px-3 py-1.5 bg-boti-card hover:bg-boti-border border border-boti-border rounded-lg text-xs font-semibold flex items-center gap-1.5 transition text-boti-cream" title="Ke Beranda Utama">
+                    <i class="fa-solid fa-house text-boti-highlight"></i>
+                    <span class="hidden sm:inline">Home</span>
+                </button>
+                <button onclick="toggleModal('sitemap-modal')" class="px-3 py-1.5 bg-boti-ochre hover:bg-boti-amber text-boti-cream rounded-lg text-xs font-semibold flex items-center gap-1.5 transition shadow-sm" title="Buka Peta Situs Non-Linier">
+                    <i class="fa-solid fa-sitemap"></i>
+                    <span>Sitemap</span>
+                </button>
+                <button onclick="toggleModal('graph-modal')" class="px-3 py-1.5 bg-boti-amber/20 hover:bg-boti-amber/40 text-boti-highlight border border-boti-amber/40 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition" title="Lihat Peta Graf Hypermedia G=(V,E)">
+                    <i class="fa-solid fa-diagram-project"></i>
+                    <span class="hidden lg:inline">Peta Graf G(V,E)</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Breadcrumbs Display -->
+        <div class="md:hidden mt-2 pt-2 border-t border-boti-border/40 flex justify-center">
+            <nav aria-label="Breadcrumb Mobile" class="text-xs">
+                <ol id="mobile-breadcrumb-list" class="flex items-center space-x-1 font-medium">
+                    <!-- Dynamic Mobile Breadcrumbs -->
+                </ol>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-6 lg:p-8 relative">
+
+        <!-- ==================== NODE 1: HOME / BERANDA ==================== -->
+        <section id="node-home" class="node-section space-y-8 animate-fadeIn">
+            <!-- Hero Banner -->
+            <div class="relative rounded-2xl overflow-hidden border border-boti-border bg-boti-card p-6 md:p-10 shadow-2xl motif-pattern">
+                <div class="relative z-10 max-w-3xl space-y-4">
+                    <span class="inline-block px-3 py-1 bg-boti-ochre/80 text-boti-cream text-xs font-bold rounded-full uppercase tracking-widest border border-boti-highlight/30">
+                        Situs Edukasi Interaktif & Hypermedia Budaya
+                    </span>
+                    <h1 class="font-serif text-3xl md:text-5xl font-extrabold text-boti-cream leading-tight">
+                        Menjaga Keaslian Tradisi & Falsafah Hidup <span class="text-boti-highlight italic">Suku Boti</span>
+                    </h1>
+                    <p class="text-boti-cream/90 text-sm md:text-base leading-relaxed">
+                        Selamat datang di sistem media informasi digital terstruktur. Suku Boti adalah suku asli di Kabupaten Timor Tengah Selatan (TTS), NTT, yang teguh mempertahankan adat istiadat, tatanan hidup harmonis dengan alam, serta kepercayaan *Uis Neno* dan *Uis Pah*.
+                    </p>
+                    <div class="flex flex-wrap gap-3 pt-2">
+                        <button onclick="navigateTo('profil')" class="px-5 py-2.5 bg-boti-ochre hover:bg-boti-amber font-semibold text-sm rounded-xl shadow-lg transition flex items-center gap-2">
+                            <span>Jelajahi Profil</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                        <button onclick="navigateTo('peta')" class="px-5 py-2.5 bg-boti-card hover:bg-boti-border border border-boti-highlight/40 font-semibold text-sm text-boti-highlight rounded-xl transition flex items-center gap-2">
+                            <i class="fa-solid fa-map-location-dot"></i>
+                            <span>Peta Boti Dalam & Luar</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Access Hyperlinked Nodes Grid (Non-Linear Architecture) -->
+            <div>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="font-serif text-2xl font-bold text-boti-cream flex items-center gap-2">
+                        <i class="fa-solid fa-compass text-boti-highlight"></i> Simpul Utama Informasi (Nodes)
+                    </h2>
+                    <span class="text-xs text-boti-cream/70">5 Simpul Utama Hypermedia</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+
+                    <!-- Node Card: Profil -->
+                    <div onclick="navigateTo('profil')" class="cursor-pointer group bg-boti-card hover:bg-boti-border/60 border border-boti-border hover:border-boti-highlight/60 p-5 rounded-2xl transition duration-300 shadow-md flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 rounded-xl bg-boti-ochre/30 border border-boti-ochre flex items-center justify-center text-boti-highlight text-xl mb-4 group-hover:scale-110 transition duration-300">
+                                <i class="fa-solid fa-landmark"></i>
+                            </div>
+                            <h3 class="font-serif text-xl font-bold mb-2 group-hover:text-boti-highlight transition">1. Profil & Sejarah Suku Boti</h3>
+                            <p class="text-xs md:text-sm text-boti-cream/80 line-clamp-3">
+                                Mengenal asal usul, wilayah adat, Kepemimpinan Raja Usif Boti (Raja Nama Bano), serta struktur sosial masyarakat.
+                            </p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-boti-border/40 flex items-center justify-between text-xs text-boti-highlight font-semibold">
+                            <span>Buka Simpul (Node 1)</span>
+                            <i class="fa-solid fa-[#000] fa-chevron-right group-hover:translate-x-1 transition"></i>
+                        </div>
+                    </div>
+
+                    <!-- Node Card: Falsafah -->
+                    <div onclick="navigateTo('falsafah')" class="cursor-pointer group bg-boti-card hover:bg-boti-border/60 border border-boti-border hover:border-boti-highlight/60 p-5 rounded-2xl transition duration-300 shadow-md flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 rounded-xl bg-boti-ochre/30 border border-boti-ochre flex items-center justify-center text-boti-highlight text-xl mb-4 group-hover:scale-110 transition duration-300">
+                                <i class="fa-solid fa-yin-yang"></i>
+                            </div>
+                            <h3 class="font-serif text-xl font-bold mb-2 group-hover:text-boti-highlight transition">2. Falsafah & Kepercayaan</h3>
+                            <p class="text-xs md:text-sm text-boti-cream/80 line-clamp-3">
+                                Penghormatan kepada Uis Neno (Dewa Langit) & Uis Pah (Penguasa Bumi), tradisi Halek, dan kearifan menjaga alam.
+                            </p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-boti-border/40 flex items-center justify-between text-xs text-boti-highlight font-semibold">
+                            <span>Buka Simpul (Node 2)</span>
+                            <i class="fa-solid fa-[#000] fa-chevron-right group-hover:translate-x-1 transition"></i>
+                        </div>
+                    </div>
+
+                    <!-- Node Card: Tenun -->
+                    <div onclick="navigateTo('tenun')" class="cursor-pointer group bg-boti-card hover:bg-boti-border/60 border border-boti-border hover:border-boti-highlight/60 p-5 rounded-2xl transition duration-300 shadow-md flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 rounded-xl bg-boti-ochre/30 border border-boti-ochre flex items-center justify-center text-boti-highlight text-xl mb-4 group-hover:scale-110 transition duration-300">
+                                <i class="fa-solid fa-scroll"></i>
+                            </div>
+                            <h3 class="font-serif text-xl font-bold mb-2 group-hover:text-boti-highlight transition">3. Galeri Motif Tenun Ikat</h3>
+                            <p class="text-xs md:text-sm text-boti-cream/80 line-clamp-3">
+                                Eksplorasi visual interaktif kain tenun pewarna alami, filosofi motif geopolitik, hewan, dan simbol spiritual Suku Boti.
+                            </p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-boti-border/40 flex items-center justify-between text-xs text-boti-highlight font-semibold">
+                            <span>Buka Simpul (Node 3)</span>
+                            <i class="fa-solid fa-[#000] fa-chevron-right group-hover:translate-x-1 transition"></i>
+                        </div>
+                    </div>
+
+                    <!-- Node Card: Audio Bahasa -->
+                    <div onclick="navigateTo('audio')" class="cursor-pointer group bg-boti-card hover:bg-boti-border/60 border border-boti-border hover:border-boti-highlight/60 p-5 rounded-2xl transition duration-300 shadow-md flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 rounded-xl bg-boti-ochre/30 border border-boti-ochre flex items-center justify-center text-boti-highlight text-xl mb-4 group-hover:scale-110 transition duration-300">
+                                <i class="fa-solid fa-volume-high"></i>
+                            </div>
+                            <h3 class="font-serif text-xl font-bold mb-2 group-hover:text-boti-highlight transition">4. Audio Bahasa Dawan (TTS)</h3>
+                            <p class="text-xs md:text-sm text-boti-cream/80 line-clamp-3">
+                                Modul audio interaktif kosakata & frase Bahasa Dawan lokal Boti lengkap dengan fitur penerjemah dan simulasi suara AI.
+                            </p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-boti-border/40 flex items-center justify-between text-xs text-boti-highlight font-semibold">
+                            <span>Buka Simpul (Node 4)</span>
+                            <i class="fa-solid fa-[#000] fa-chevron-right group-hover:translate-x-1 transition"></i>
+                        </div>
+                    </div>
+
+                    <!-- Node Card: Peta -->
+                    <div onclick="navigateTo('peta')" class="cursor-pointer group bg-boti-card hover:bg-boti-border/60 border border-boti-border hover:border-boti-highlight/60 p-5 rounded-2xl transition duration-300 shadow-md flex flex-col justify-between md:col-span-2 lg:col-span-2">
+                        <div>
+                            <div class="w-12 h-12 rounded-xl bg-boti-ochre/30 border border-boti-ochre flex items-center justify-center text-boti-highlight text-xl mb-4 group-hover:scale-110 transition duration-300">
+                                <i class="fa-solid fa-map-marked-alt"></i>
+                            </div>
+                            <h3 class="font-serif text-xl font-bold mb-2 group-hover:text-boti-highlight transition">5. Peta Interaktif Boti Dalam & Luar</h3>
+                            <p class="text-xs md:text-sm text-boti-cream/80 line-clamp-3">
+                                Pemetaan wilayah administratif & adat yang membedakan Boti Dalam (Panglima adat, memegang penuh tradisi) dan Boti Luar (Masyarakat modern/sekolah/gereja).
+                            </p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-boti-border/40 flex items-center justify-between text-xs text-boti-highlight font-semibold">
+                            <span>Buka Simpul (Node 5)</span>
+                            <i class="fa-solid fa-[#000] fa-chevron-right group-hover:translate-x-1 transition"></i>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== NODE 2: PROFIL SUKU BOTI ==================== -->
+        <section id="node-profil" class="node-section hidden space-y-6 animate-fadeIn">
+            <!-- Header section -->
+            <div class="border-b border-boti-border pb-4">
+                <span class="text-xs font-bold text-boti-amber uppercase tracking-widest">SIMPUL 1 • HIGHLIGHT KEBUDAYAAN</span>
+                <h1 class="font-serif text-3xl md:text-4xl font-bold text-boti-cream mt-1">Profil & Geografis Suku Boti</h1>
+                <p class="text-sm text-boti-cream/70 mt-1">Kecamatan Ki'e, Kabupaten Timor Tengah Selatan (TTS), Nusa Tenggara Timur</p>
+            </div>
+
+            <!-- Content Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 space-y-4 text-sm leading-relaxed text-boti-cream/90">
+                    <div class="bg-boti-card border border-boti-border rounded-xl p-5 space-y-3">
+                        <h2 class="font-serif text-xl font-bold text-boti-highlight flex items-center gap-2">
+                            <i class="fa-solid fa-crown"></i> Kerajaan & Raja Usif Boti
+                        </h2>
+                        <p>
+                            Suku Boti adalah keturunan dari suku asli pulau Timor, Atoni Meto. Suku Boti dipimpin oleh seorang Raja Adat yang bergelar **Usif Boti** (saat ini Usif Nama Bano). Raja Boti tidak hanya bertindak sebagai pemimpin pemerintahan adat, tetapi juga sebagai pemimpin spiritual, hakim adat, serta pelindung kehidupan sosial seluruh warga suku.
+                        </p>
+                        <p>
+                            Masyarakat Boti sangat menjunjung tinggi kejujuran dan toleransi. Jika ada warga yang mencuri hasil kebun (seperti singkong atau pisang) karena kelaparan, adat tidak menghukumnya dengan penjara, melainkan raja dan warga justru akan **memberikannya kebun atau bibit baru** agar ia tidak perlu mencuri lagi.
+                        </p>
+                    </div>
+
+                    <div class="bg-boti-card border border-boti-border rounded-xl p-5 space-y-3">
+                        <h2 class="font-serif text-xl font-bold text-boti-highlight flex items-center gap-2">
+                            <i class="fa-solid fa-people-roof"></i> Pembagian Boti Dalam & Boti Luar
+                        </h2>
+                        <p>
+                            Wilayah Boti terbagi menjadi dua kelompok sosial utama:
+                        </p>
+                        <ul class="list-disc list-inside space-y-2 pl-2 text-boti-cream/80">
+                            <li><strong class="text-boti-cream">Boti Dalam (Inner Boti):</strong> Komunitas adat yang teguh memegang tradisi murni. Tidak menganut agama rasmi modern, tidak memakai listrik/gadget modern, pria rambut dikonde (Halek), serta memakai kain tenun buatan sendiri.</li>
+                            <li><strong class="text-boti-cream">Boti Luar (Outer Boti):</strong> Warga Boti yang telah bersentuhan dengan modernisasi, mengecap pendidikan sekolah formal, serta menganut agama formal (Kristen/Katolik).</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Sidebar Hyperlinks to other related nodes -->
+                <div class="space-y-4">
+                    <div class="bg-boti-card border border-boti-border rounded-xl p-5">
+                        <h3 class="font-serif font-bold text-boti-cream mb-3 pb-2 border-b border-boti-border">Tautan Hypermedia Terkait</h3>
+                        <div class="space-y-2">
+                            <button onclick="navigateTo('falsafah')" class="w-full text-left p-2.5 bg-boti-earth hover:bg-boti-border rounded-lg border border-boti-border/60 text-xs text-boti-highlight font-semibold flex items-center justify-between transition">
+                                <span><i class="fa-solid fa-link mr-1"></i> Baca Falsafah Uis Neno</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                            <button onclick="navigateTo('peta')" class="w-full text-left p-2.5 bg-boti-earth hover:bg-boti-border rounded-lg border border-boti-border/60 text-xs text-boti-highlight font-semibold flex items-center justify-between transition">
+                                <span><i class="fa-solid fa-link mr-1"></i> Lihat Letak Peta Adat</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                            <button onclick="navigateTo('audio')" class="w-full text-left p-2.5 bg-boti-earth hover:bg-boti-border rounded-lg border border-boti-border/60 text-xs text-boti-highlight font-semibold flex items-center justify-between transition">
+                                <span><i class="fa-solid fa-link mr-1"></i> Sapaan Adat Dawan</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-boti-amber/10 border border-boti-amber/30 rounded-xl p-4 text-xs text-boti-cream/80 space-y-2">
+                        <span class="font-bold text-boti-highlight block"><i class="fa-solid fa-circle-info mr-1"></i> Catatan Navigasi</span>
+                        <p>Gunakan tombol breadcrumbs di navigasi atas jika Anda ingin kembali atau berpindah tanpa kehilangan jejak lokasi.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== NODE 3: FALSAFAH & TRADISI ==================== -->
+        <section id="node-falsafah" class="node-section hidden space-y-6 animate-fadeIn">
+            <div class="border-b border-boti-border pb-4">
+                <span class="text-xs font-bold text-boti-amber uppercase tracking-widest">SIMPUL 2 • PRINSIP HIDUP</span>
+                <h1 class="font-serif text-3xl md:text-4xl font-bold text-boti-cream mt-1">Falsafah, Kepercayaan & Tradisi</h1>
+                <p class="text-sm text-boti-cream/70 mt-1">Keseimbangan Kosmis Uis Neno (Langit) dan Uis Pah (Bumi)</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <!-- Uis Neno & Uis Pah -->
+                <div class="bg-boti-card border border-boti-border rounded-xl p-6 space-y-3">
+                    <div class="w-10 h-10 rounded-lg bg-boti-ochre/30 flex items-center justify-center text-boti-highlight text-lg font-bold">
+                        1
+                    </div>
+                    <h2 class="font-serif text-xl font-bold text-boti-cream">Uis Neno & Uis Pah</h2>
+                    <p class="text-sm text-boti-cream/80 leading-relaxed">
+                        Masyarakat Boti Dalam meyakini dua kekuatan dewata pencipta alam semesta:
+                    </p>
+                    <ul class="text-xs md:text-sm space-y-2 text-boti-cream/90 list-disc list-inside bg-boti-earth/60 p-3 rounded-lg border border-boti-border/40">
+                        <li><strong class="text-boti-highlight">Uis Neno:</strong> Penguasa Alam Atas / Langit yang menciptakan matahari, hujan, kehidupan, dan takdir manusia.</li>
+                        <li><strong class="text-boti-highlight">Uis Pah:</strong> Penguasa Alam Bawah / Earth Mother (Bumi) yang memberikan kesuburan tanah, tanaman, air, dan kehidupan jasmani.</li>
+                    </ul>
+                </div>
+
+                <!-- Tradisi Halek -->
+                <div class="bg-boti-card border border-boti-border rounded-xl p-6 space-y-3">
+                    <div class="w-10 h-10 rounded-lg bg-boti-ochre/30 flex items-center justify-center text-boti-highlight text-lg font-bold">
+                        2
+                    </div>
+                    <h2 class="font-serif text-xl font-bold text-boti-cream">Tradisi Halek (Rambut Konde)</h2>
+                    <p class="text-sm text-boti-cream/80 leading-relaxed">
+                        Setiap pria dewasa di Boti Dalam diwajibkan memelihara rambut panjang yang kemudian digelung/dikonde di atas kepala (disebut *Halek*). Konde ini melambangkan mahkota kehormatan, kebijaksanaan, dan identitas sebagai pemangku adat suku.
+                    </p>
+                </div>
+
+                <!-- Hari Pah Neno (Siklus 9 Hari) -->
+                <div class="bg-boti-card border border-boti-border rounded-xl p-6 space-y-3 md:col-span-2">
+                    <div class="w-10 h-10 rounded-lg bg-boti-ochre/30 flex items-center justify-center text-boti-highlight text-lg font-bold">
+                        3
+                    </div>
+                    <h2 class="font-serif text-xl font-bold text-boti-cream">Siklus Kalender Adat (9 Hari Dalam Seminggu)</h2>
+                    <p class="text-sm text-boti-cream/80 leading-relaxed">
+                        Berbeda dengan sistem kalender masehi (7 hari), Suku Boti mengenal **kalender tradisional 9 hari**. Setiap hari memiliki makna ritual tersendiri, seperti hari untuk berkebun, hari berburu, hingga hari *Neon Toko* (hari sabat/istirahat total di mana tidak boleh bekerja atau menyakiti tanaman).
+                    </p>
+                    
+                    <div class="pt-2 flex flex-wrap gap-2">
+                        <button onclick="navigateTo('tenun')" class="px-4 py-2 bg-boti-ochre text-xs font-semibold rounded-lg hover:bg-boti-amber transition">
+                            <i class="fa-solid fa-scroll mr-1"></i> Kaitan dengan Motif Tenun Adat
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ==================== NODE 4: GALERI MOTIF TENUN ==================== -->
+        <section id="node-tenun" class="node-section hidden space-y-6 animate-fadeIn">
+            <div class="border-b border-boti-border pb-4">
+                <span class="text-xs font-bold text-boti-amber uppercase tracking-widest">SIMPUL 3 • KARYA KRIYA NATIVE</span>
+                <h1 class="font-serif text-3xl md:text-4xl font-bold text-boti-cream mt-1">Galeri & Inspector Motif Tenun Ikat</h1>
+                <p class="text-sm text-boti-cream/70 mt-1">Kain tenun Boti dibuat 100% menggunakan benang kapas buatan tangan dan pewarna tumbuh-tumbuhan alami.</p>
+            </div>
+
+            <!-- Interactive Motif Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                <!-- Motif 1 -->
+                <div class="bg-boti-card border border-boti-border rounded-2xl overflow-hidden hover:border-boti-highlight transition group">
+                    <div class="h-48 bg-[#3D1A10] flex items-center justify-center p-6 relative border-b border-boti-border">
+                        <!-- SVG Simulated Tenun Pattern -->
+                        <svg class="w-full h-full text-boti-highlight group-hover:scale-105 transition duration-500" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="50,10 90,50 50,90 10,50" fill="rgba(158, 59, 33, 0.4)"/>
+                            <polygon points="50,25 75,50 50,75 25,50" fill="rgba(198, 107, 39, 0.6)"/>
+                            <circle cx="50" cy="50" r="8" fill="#E0A96D"/>
+                            <path d="M10 10 L30 30 M90 10 L70 30 M10 90 L30 70 M90 90 L70 70" stroke="#F9F6F0" stroke-width="1.5"/>
+                        </svg>
+                        <span class="absolute top-3 right-3 bg-boti-ochre text-[10px] uppercase tracking-wider px-2 py-0.5 rounded text-boti-cream font-bold">Pewarna Mengkudu</span>
+                    </div>
+                    <div class="p-5 space-y-3">
+                        <h3 class="font-serif text-lg font-bold text-boti-cream">Motif Kaun Fatu (Cicak / Tokek)</h3>
+                        <p class="text-xs text-boti-cream/80 line-clamp-2">Simbol kejelian, penjaga rumah, dan keberuntungan hidup masyarakat Boti.</p>
+                        <button onclick="inspectMotif('Kaun Fatu', 'Simbol penjaga dan kejelian hidup.', 'Merah Oker (Akar Mengkudu) & Hitam (Lumpur/Tarum)', 'Digunakan oleh para bangsawan dan pemangku adat saat upacara kepercayaan Uis Neno.')" class="w-full py-2 bg-boti-earth hover:bg-boti-ochre border border-boti-border text-xs text-boti-highlight font-semibold rounded-lg transition flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-magnifying-glass-plus"></i> Inspeksi Detail Motif
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Motif 2 -->
+                <div class="bg-boti-card border border-boti-border rounded-2xl overflow-hidden hover:border-boti-highlight transition group">
+                    <div class="h-48 bg-[#2A1D15] flex items-center justify-center p-6 relative border-b border-boti-border">
+                        <svg class="w-full h-full text-boti-amber group-hover:scale-105 transition duration-500" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="20" y="20" width="60" height="60" fill="rgba(224, 169, 109, 0.2)" stroke="#C66B27" stroke-width="2"/>
+                            <line x1="20" y1="20" x2="80" y2="80" stroke="#9E3B21" stroke-width="2"/>
+                            <line x1="80" y1="20" x2="20" y2="80" stroke="#9E3B21" stroke-width="2"/>
+                            <circle cx="50" cy="20" r="5" fill="#F9F6F0"/>
+                            <circle cx="50" cy="80" r="5" fill="#F9F6F0"/>
+                        </svg>
+                        <span class="absolute top-3 right-3 bg-boti-ochre text-[10px] uppercase tracking-wider px-2 py-0.5 rounded text-boti-cream font-bold">Pewarna Tarum (Nila)</span>
+                    </div>
+                    <div class="p-5 space-y-3">
+                        <h3 class="font-serif text-lg font-bold text-boti-cream">Motif Burung Kakaktua (Mako)</h3>
+                        <p class="text-xs text-boti-cream/80 line-clamp-2">Melambangkan pesan perdamaian, kebersamaan, dan komunikasi antar suku.</p>
+                        <button onclick="inspectMotif('Motif Mako (Burung Kakaktua)', 'Melambangkan pesan musyawarah dan komunikasi adat.', 'Biru Tua / Indigo (Daun Tarum) & Krem Kapas', 'Kain selimut tradisional yang dipakai oleh utusan adat Boti saat menerima tamu kehormatan.')" class="w-full py-2 bg-boti-earth hover:bg-boti-ochre border border-boti-border text-xs text-boti-highlight font-semibold rounded-lg transition flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-magnifying-glass-plus"></i> Inspeksi Detail Motif
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Motif 3 -->
+                <div class="bg-boti-card border border-boti-border rounded-2xl overflow-hidden hover:border-boti-highlight transition group">
+                    <div class="h-48 bg-[#38160D] flex items-center justify-center p-6 relative border-b border-boti-border">
+                        <svg class="w-full h-full text-boti-cream group-hover:scale-105 transition duration-500" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M50 10 L90 50 L50 90 L10 50 Z" stroke="#E0A96D" fill="none"/>
+                            <path d="M50 20 L80 50 L50 80 L20 50 Z" stroke="#9E3B21" fill="rgba(158, 59, 33, 0.5)"/>
+                            <path d="M30 30 L70 70 M70 30 L30 70" stroke="#F9F6F0"/>
+                        </svg>
+                        <span class="absolute top-3 right-3 bg-boti-ochre text-[10px] uppercase tracking-wider px-2 py-0.5 rounded text-boti-cream font-bold">Kapas Murni</span>
+                    </div>
+                    <div class="p-5 space-y-3">
+                        <h3 class="font-serif text-lg font-bold text-boti-cream">Motif Bunga & Geometris (Pah Meto)</h3>
+                        <p class="text-xs text-boti-cream/80 line-clamp-2">Garis-garis batas tanah dan penghargaan atas hasil pertanian kebun Boti.</p>
+                        <button onclick="inspectMotif('Motif Pah Meto (Geometris)', 'Garis wilayah adat dan batas keharmonisan tanah Boti.', 'Kombinasi Kulit Kayu & Akar Tanaman', 'Dipakai sebagai pakaian harian (Mau Naim) oleh perempuan dan laki-laki Boti Dalam.')" class="w-full py-2 bg-boti-earth hover:bg-boti-ochre border border-boti-border text-xs text-boti-highlight font-semibold rounded-lg transition flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-magnifying-glass-plus"></i> Inspeksi Detail Motif
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ==================== NODE 5: AUDIO BAHASA DAWAN ==================== -->
+        <section id="node-audio" class="node-section hidden space-y-6 animate-fadeIn">
+            <div class="border-b border-boti-border pb-4">
+                <span class="text-xs font-bold text-boti-amber uppercase tracking-widest">SIMPUL 4 • BAHASA LOKAL & SIMULASI AI</span>
+                <h1 class="font-serif text-3xl md:text-4xl font-bold text-boti-cream mt-1">Audio Bahasa Dawan (Uab Meto)</h1>
+                <p class="text-sm text-boti-cream/70 mt-1">Dengarkan dan pelajari pengucapan kosakata dasar Bahasa Dawan lokal Suku Boti.</p>
+            </div>
+
+            <div class="bg-boti-card border border-boti-border rounded-2xl p-6 shadow-xl space-y-6">
+                
+                <!-- Player Box -->
+                <div class="bg-boti-earth p-4 rounded-xl border border-boti-border flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center space-x-4 w-full md:w-auto">
+                        <button id="main-play-btn" onclick="playCurrentAudio()" class="w-14 h-14 rounded-full bg-boti-ochre hover:bg-boti-amber text-boti-cream flex items-center justify-center text-xl shadow-lg transition flex-shrink-0">
+                            <i id="play-icon" class="fa-solid fa-play"></i>
+                        </button>
+                        <div>
+                            <span class="text-xs text-boti-highlight font-semibold block uppercase">Sedang Diputar</span>
+                            <h3 id="current-phrase-title" class="font-serif text-lg font-bold text-boti-cream">Halo / Selamat Datang (Tabe)</h3>
+                            <p id="current-phrase-trans" class="text-xs text-boti-cream/70">Terjemahan: "Tabe, Salama Onu"</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+                        <button onclick="simulateAITranslator()" class="px-4 py-2 bg-boti-amber/20 hover:bg-boti-amber/40 text-boti-highlight border border-boti-amber/50 text-xs font-semibold rounded-lg transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>Simulasi AI Voice Generator</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Vocabulary List Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs md:text-sm">
+                        <thead class="bg-boti-earth text-boti-highlight uppercase border-b border-boti-border text-[11px]">
+                            <tr>
+                                <th class="p-3">Bahasa Indonesia</th>
+                                <th class="p-3">Bahasa Dawan (Uab Meto)</th>
+                                <th class="p-3">Pengucapan / Fonetik</th>
+                                <th class="p-3 text-right">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-boti-border/50 text-boti-cream/90">
+                            <tr class="hover:bg-boti-border/30 transition">
+                                <td class="p-3 font-semibold">Selamat Datang / Salam</td>
+                                <td class="p-3 text-boti-highlight italic">Tabe, Salama Onu</td>
+                                <td class="p-3 text-boti-cream/70">[Ta-be, Sa-la-ma O-nu]</td>
+                                <td class="p-3 text-right">
+                                    <button onclick="selectAudio('Tabe, Salama Onu', 'Selamat Datang / Salam', 'Tabe, Salama Onu')" class="px-3 py-1 bg-boti-ochre text-boti-cream rounded hover:bg-boti-amber transition">
+                                        <i class="fa-solid fa-volume-high"></i> Putar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-boti-border/30 transition">
+                                <td class="p-3 font-semibold">Terima Kasih Banyak</td>
+                                <td class="p-3 text-boti-highlight italic">Tuese Nasi / Makasi</td>
+                                <td class="p-3 text-boti-cream/70">[Tu-e-se Na-si]</td>
+                                <td class="p-3 text-right">
+                                    <button onclick="selectAudio('Tuese Nasi', 'Terima Kasih Banyak', 'Tuese Nasi')" class="px-3 py-1 bg-boti-ochre text-boti-cream rounded hover:bg-boti-amber transition">
+                                        <i class="fa-solid fa-volume-high"></i> Putar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-boti-border/30 transition">
+                                <td class="p-3 font-semibold">Tuhan Langit (Pencipta)</td>
+                                <td class="p-3 text-boti-highlight italic">Uis Neno Ama</td>
+                                <td class="p-3 text-boti-cream/70">[U-is Ne-no A-ma]</td>
+                                <td class="p-3 text-right">
+                                    <button onclick="selectAudio('Uis Neno Ama', 'Tuhan Langit (Pencipta)', 'Uis Neno Ama')" class="px-3 py-1 bg-boti-ochre text-boti-cream rounded hover:bg-boti-amber transition">
+                                        <i class="fa-solid fa-volume-high"></i> Putar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-boti-border/30 transition">
+                                <td class="p-3 font-semibold">Ibu Bumi / Tanah Adat</td>
+                                <td class="p-3 text-boti-highlight italic">Uis Pah Ain</td>
+                                <td class="p-3 text-boti-cream/70">[U-is Pah A-in]</td>
+                                <td class="p-3 text-right">
+                                    <button onclick="selectAudio('Uis Pah Ain', 'Ibu Bumi / Tanah Adat', 'Uis Pah Ain')" class="px-3 py-1 bg-boti-ochre text-boti-cream rounded hover:bg-boti-amber transition">
+                                        <i class="fa-solid fa-volume-high"></i> Putar
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ==================== NODE 6: PETA INTERAKTIF ==================== -->
+        <section id="node-peta" class="node-section hidden space-y-6 animate-fadeIn">
+            <div class="border-b border-boti-border pb-4">
+                <span class="text-xs font-bold text-boti-amber uppercase tracking-widest">SIMPUL 5 • PEMETAAN WILAYAH ADAT</span>
+                <h1 class="font-serif text-3xl md:text-4xl font-bold text-boti-cream mt-1">Peta Interaktif Boti Dalam & Boti Luar</h1>
+                <p class="text-sm text-boti-cream/70 mt-1">Visualisasi kawasan permukiman adat Boti Dalam dan Zona Boti Luar di Timor Tengah Selatan.</p>
+            </div>
+
+            <!-- Interactive Map Container -->
+            <div class="bg-boti-card border border-boti-border rounded-2xl p-4 md:p-6 shadow-xl space-y-4">
+                <div class="relative w-full h-[380px] md:h-[450px] bg-[#120804] rounded-xl border border-boti-border overflow-hidden flex items-center justify-center p-4">
+                    
+                    <!-- Canvas / SVG Simulated Interactive Map Layout -->
+                    <svg class="w-full h-full" viewBox="0 0 800 500" fill="none">
+                        <!-- Background topography lines -->
+                        <path d="M0 100 Q 200 50, 400 150 T 800 100" stroke="#2C1810" stroke-width="2" fill="none"/>
+                        <path d="M0 250 Q 300 200, 500 300 T 800 250" stroke="#2C1810" stroke-width="2" fill="none"/>
+                        
+                        <!-- Zone 1: Boti Luar Boundary -->
+                        <rect x="50" y="40" width="700" height="420" rx="20" fill="rgba(198, 107, 39, 0.05)" stroke="#C66B27" stroke-width="2" stroke-dasharray="6 6"/>
+                        <text x="70" y="70" fill="#C66B27" font-size="14" font-weight="bold">ZONA BOTI LUAR (Masyarakat Modern / Sekolah / Gereja)</text>
+
+                        <!-- Zone 2: Boti Dalam Boundary (Sacred Inner Circle) -->
+                        <circle cx="400" cy="260" r="150" fill="rgba(158, 59, 33, 0.2)" stroke="#9E3B21" stroke-width="3"/>
+                        <text x="310" y="140" fill="#E0A96D" font-size="14" font-weight="bold">WILAYAH ADAT BOTI DALAM</text>
+
+                        <!-- Interactive Hotspot 1: Sonaf / Istana Raja Usif Boti -->
+                        <g onclick="showMapPinInfo('Sonaf Usif Boti', 'Pusat Istana Raja Boti. Tempat musyawarah adat, penyelesaian sengketa warga, dan pelaksanaan ritual Uis Neno.')" class="cursor-pointer group">
+                            <circle cx="400" cy="240" r="16" fill="#9E3B21" stroke="#E0A96D" stroke-width="3" class="active-node-anim"/>
+                            <text x="400" y="245" fill="#FFFFFF" font-size="12" text-anchor="middle" font-weight="bold">R</text>
+                            <text x="400" y="275" fill="#F9F6F0" font-size="11" text-anchor="middle" font-weight="bold" class="group-hover:fill-boti-highlight transition">Sonaf Usif Boti</text>
+                        </g>
+
+                        <!-- Interactive Hotspot 2: Rumah Adat Loni / Lopo -->
+                        <g onclick="showMapPinInfo('Lopo Adat', 'Lopo adalah rumah bulat khas Timor dengan atap ilalang yang menyentuh tanah. Berfungsi sebagai lumbung pangan dan tempat pertemuan.')" class="cursor-pointer group">
+                            <circle cx="330" cy="290" r="12" fill="#C66B27" stroke="#F9F6F0" stroke-width="2"/>
+                            <text x="330" y="294" fill="#FFFFFF" font-size="10" text-anchor="middle">L</text>
+                            <text x="330" y="318" fill="#F9F6F0" font-size="10" text-anchor="middle">Lopo Adat</text>
+                        </g>
+
+                        <!-- Interactive Hotspot 3: Kebun Kolektif Adat -->
+                        <g onclick="showMapPinInfo('Kebun Kolektif Adat', 'Lahan pertanian bersama tempat warga Boti Dalam menanam jagung, uik kayu, dan kapas secara organik tanpa pupuk kimia.')" class="cursor-pointer group">
+                            <circle cx="470" cy="280" r="12" fill="#C66B27" stroke="#F9F6F0" stroke-width="2"/>
+                            <text x="470" y="284" fill="#FFFFFF" font-size="10" text-anchor="middle">K</text>
+                            <text x="470" y="308" fill="#F9F6F0" font-size="10" text-anchor="middle">Kebun Adat</text>
+                        </g>
+
+                        <!-- Interactive Hotspot 4: Perbatasan / Gerbang Adat Boti Luar -->
+                        <g onclick="showMapPinInfo('Gerbang Masuk Boti Luar', 'Batas pemisah antara kehidupan modern dengan kawasan adat Boti Dalam. Pengunjung wajib melepas alas kaki tertentu dan melapor pada utusan Usif.')" class="cursor-pointer group">
+                            <circle cx="180" cy="360" r="12" fill="#523023" stroke="#C66B27" stroke-width="2"/>
+                            <text x="180" y="364" fill="#FFFFFF" font-size="10" text-anchor="middle">G</text>
+                            <text x="180" y="388" fill="#F9F6F0" font-size="10" text-anchor="middle">Gerbang Masuk</text>
+                        </g>
+                    </svg>
+
+                    <div class="absolute bottom-3 left-3 bg-boti-earth/90 border border-boti-border p-2.5 rounded-lg text-[11px] space-y-1">
+                        <span class="font-bold text-boti-highlight block">Petunjuk Map Interaktif:</span>
+                        <p class="text-boti-cream/80">Klik pada titik lingkaran (R, L, K, G) untuk melihat detail lokasi.</p>
+                    </div>
+                </div>
+
+                <!-- Map Info Box -->
+                <div id="map-pin-details" class="bg-boti-earth p-4 rounded-xl border border-boti-border">
+                    <h3 id="map-pin-title" class="font-serif font-bold text-lg text-boti-highlight">Klik salah satu lokasi pada peta</h3>
+                    <p id="map-pin-desc" class="text-xs md:text-sm text-boti-cream/80 mt-1">Pilih titik pada peta interaktif di atas untuk membaca deskripsi wilayah Boti Dalam atau Boti Luar.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Accessible Footer -->
+    <footer class="bg-[#120804] border-t border-boti-border mt-12 py-6 px-4 text-center text-xs text-boti-cream/70">
+        <div class="max-w-7xl mx-auto space-y-3">
+            <div class="flex flex-wrap justify-center gap-4 text-boti-cream/90 font-medium">
+                <button onclick="navigateTo('home')" class="hover:text-boti-highlight transition">Beranda</button>
+                <span>•</span>
+                <button onclick="navigateTo('profil')" class="hover:text-boti-highlight transition">Profil</button>
+                <span>•</span>
+                <button onclick="navigateTo('falsafah')" class="hover:text-boti-highlight transition">Falsafah</button>
+                <span>•</span>
+                <button onclick="navigateTo('tenun')" class="hover:text-boti-highlight transition">Motif Tenun</button>
+                <span>•</span>
+                <button onclick="navigateTo('audio')" class="hover:text-boti-highlight transition">Audio Dawan</button>
+                <span>•</span>
+                <button onclick="navigateTo('peta')" class="hover:text-boti-highlight transition">Peta Adat</button>
+            </div>
+            <p>© Proyek Mini OBE - Perancangan Arsitektur Hypermedia Interaktif & Antarmuka Budaya. Standar Aksesibilitas WCAG AAA & Encoding UTF-8.</p>
+        </div>
+    </footer>
+
+    <!-- ==================== MODAL 1: SITEMAP (ANTI-LOST IN HYPERSPACE) ==================== -->
+    <div id="sitemap-modal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-boti-card border border-boti-border rounded-2xl max-w-2xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar space-y-4">
+            <div class="flex items-center justify-between border-b border-boti-border pb-3">
+                <h2 class="font-serif text-xl font-bold text-boti-cream flex items-center gap-2">
+                    <i class="fa-solid fa-sitemap text-boti-highlight"></i> Peta Situs Non-Linier (Sitemap)
+                </h2>
+                <button onclick="toggleModal('sitemap-modal')" class="text-boti-cream/70 hover:text-boti-cream text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <p class="text-xs text-boti-cream/80">
+                Peta situs ini dirancang bercabang tanpa hierarki kaku untuk mencegah *Cognitive Overload* dan membantu navigasi *Lost in Hyperspace*.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                <div onclick="navigateTo('home'); toggleModal('sitemap-modal');" class="p-3 bg-boti-earth border border-boti-border hover:border-boti-highlight rounded-xl cursor-pointer">
+                    <span class="font-bold text-boti-highlight block">0. Beranda Utama</span>
+                    <span class="text-boti-cream/70">Pintu masuk & gambaran umum Suku Boti TTS.</span>
+                </div>
+                <div onclick="navigateTo('profil'); toggleModal('sitemap-modal');" class="p-3 bg-boti-earth border border-boti-border hover:border-boti-highlight rounded-xl cursor-pointer">
+                    <span class="font-bold text-boti-highlight block">1. Profil & Sejarah</span>
+                    <span class="text-boti-cream/70">Raja Usif Boti, struktur adat & geografi.</span>
+                </div>
+                <div onclick="navigateTo('falsafah'); toggleModal('sitemap-modal');" class="p-3 bg-boti-earth border border-boti-border hover:border-boti-highlight rounded-xl cursor-pointer">
+                    <span class="font-bold text-boti-highlight block">2. Falsafah & Kepercayaan</span>
+                    <span class="text-boti-cream/70">Uis Neno, Uis Pah, tradisi Halek, kalender.</span>
+                </div>
+                <div onclick="navigateTo('tenun'); toggleModal('sitemap-modal');" class="p-3 bg-boti-earth border border-boti-border hover:border-boti-highlight rounded-xl cursor-pointer">
+                    <span class="font-bold text-boti-highlight block">3. Galeri Tenun Ikat</span>
+                    <span class="text-boti-cream/70">Motif Kaun Fatu, Mako, pewarna alami.</span>
+                </div>
+                <div onclick="navigateTo('audio'); toggleModal('sitemap-modal');" class="p-3 bg-boti-earth border border-boti-border hover:border-boti-highlight rounded-xl cursor-pointer">
+                    <span class="font-bold text-boti-highlight block">4. Audio Bahasa Dawan</span>
+                    <span class="text-boti-cream/70">Simulasi TTS, sapaan adat Uab Meto.</span>
+                </div>
+                <div onclick="navigateTo('peta'); toggleModal('sitemap-modal');" class="p-3 bg-boti-earth border border-boti-border hover:border-boti-highlight rounded-xl cursor-pointer">
+                    <span class="font-bold text-boti-highlight block">5. Peta Interaktif</span>
+                    <span class="text-boti-cream/70">Pemetaan kawasan Boti Dalam vs Boti Luar.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL 2: HYPERMEDIA DIRECTED GRAPH G=(V,E) ==================== -->
+    <div id="graph-modal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-boti-card border border-boti-border rounded-2xl max-w-3xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar space-y-4">
+            <div class="flex items-center justify-between border-b border-boti-border pb-3">
+                <h2 class="font-serif text-xl font-bold text-boti-cream flex items-center gap-2">
+                    <i class="fa-solid fa-diagram-project text-boti-highlight"></i> Visualisasi Peta Struktur Graf Berarah G = (V, E)
+                </h2>
+                <button onclick="toggleModal('graph-modal')" class="text-boti-cream/70 hover:text-boti-cream text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <p class="text-xs text-boti-cream/80">
+                Diagram ini merepresentasikan struktur Hypermedia sistem secara matematis. Simpul $V$ melambangkan modul informasi (*node*), sedangkan Sisi berarah $E$ melambangkan tautan (*link/anchor*).
+            </p>
+
+            <!-- Interactive Graph Diagram Canvas / SVG -->
+            <div class="bg-boti-earth p-4 rounded-xl border border-boti-border flex items-center justify-center">
+                <svg class="w-full h-64" viewBox="0 0 600 300">
+                    <!-- Directed Edges / Links -->
+                    <defs>
+                        <marker id="arrow" viewBox="0 0 10 10" refX="18" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#C66B27" />
+                        </marker>
+                    </defs>
+
+                    <line x1="300" y1="50" x2="150" y2="120" stroke="#C66B27" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="300" y1="50" x2="450" y2="120" stroke="#C66B27" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="150" y1="120" x2="150" y2="230" stroke="#C66B27" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="450" y1="120" x2="450" y2="230" stroke="#C66B27" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="150" y1="230" x2="300" y2="260" stroke="#C66B27" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="450" y1="230" x2="300" y2="260" stroke="#C66B27" stroke-width="2" marker-end="url(#arrow)"/>
+
+                    <!-- Nodes V -->
+                    <!-- Home Node -->
+                    <g onclick="navigateTo('home'); toggleModal('graph-modal');" class="cursor-pointer">
+                        <circle cx="300" cy="50" r="22" fill="#9E3B21" stroke="#E0A96D" stroke-width="2"/>
+                        <text x="300" y="54" fill="#F9F6F0" font-size="10" font-weight="bold" text-anchor="middle">V0 (Home)</text>
+                    </g>
+
+                    <!-- Profil Node -->
+                    <g onclick="navigateTo('profil'); toggleModal('graph-modal');" class="cursor-pointer">
+                        <circle cx="150" cy="120" r="20" fill="#2C1810" stroke="#C66B27" stroke-width="2"/>
+                        <text x="150" y="124" fill="#F9F6F0" font-size="10" font-weight="bold" text-anchor="middle">V1 (Profil)</text>
+                    </g>
+
+                    <!-- Falsafah Node -->
+                    <g onclick="navigateTo('falsafah'); toggleModal('graph-modal');" class="cursor-pointer">
+                        <circle cx="450" cy="120" r="20" fill="#2C1810" stroke="#C66B27" stroke-width="2"/>
+                        <text x="450" y="124" fill="#F9F6F0" font-size="10" font-weight="bold" text-anchor="middle">V2 (Falsafah)</text>
+                    </g>
+
+                    <!-- Tenun Node -->
+                    <g onclick="navigateTo('tenun'); toggleModal('graph-modal');" class="cursor-pointer">
+                        <circle cx="150" cy="230" r="20" fill="#2C1810" stroke="#C66B27" stroke-width="2"/>
+                        <text x="150" y="234" fill="#F9F6F0" font-size="10" font-weight="bold" text-anchor="middle">V3 (Tenun)</text>
+                    </g>
+
+                    <!-- Audio Node -->
+                    <g onclick="navigateTo('audio'); toggleModal('graph-modal');" class="cursor-pointer">
+                        <circle cx="450" cy="230" r="20" fill="#2C1810" stroke="#C66B27" stroke-width="2"/>
+                        <text x="450" y="234" fill="#F9F6F0" font-size="10" font-weight="bold" text-anchor="middle">V4 (Audio)</text>
+                    </g>
+
+                    <!-- Peta Node -->
+                    <g onclick="navigateTo('peta'); toggleModal('graph-modal');" class="cursor-pointer">
+                        <circle cx="300" cy="260" r="20" fill="#2C1810" stroke="#C66B27" stroke-width="2"/>
+                        <text x="300" y="264" fill="#F9F6F0" font-size="10" font-weight="bold" text-anchor="middle">V5 (Peta)</text>
+                    </g>
+                </svg>
+            </div>
+            
+            <div class="text-[11px] text-boti-cream/70 space-y-1">
+                <p><strong>V = { V0, V1, V2, V3, V4, V5 }</strong> (Himpunan Simpul Informasi Utama)</p>
+                <p><strong>E = { (V0,V1), (V0,V2), (V1,V3), (V2,V4), (V3,V5), (V4,V5), ... }</strong> (Tautan Navigasi Non-Linier)</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL 3: TENUN INSPECTOR ==================== -->
+    <div id="inspector-modal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-boti-card border border-boti-border rounded-2xl max-w-lg w-full p-6 shadow-2xl relative space-y-4">
+            <div class="flex items-center justify-between border-b border-boti-border pb-3">
+                <h2 id="ins-title" class="font-serif text-xl font-bold text-boti-highlight">Detail Motif Tenun</h2>
+                <button onclick="toggleModal('inspector-modal')" class="text-boti-cream/70 hover:text-boti-cream text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="space-y-3 text-xs md:text-sm">
+                <div>
+                    <span class="text-boti-highlight font-semibold block">Makna & Filosofi Adat:</span>
+                    <p id="ins-philosophy" class="text-boti-cream/90 mt-0.5"></p>
+                </div>
+                <div>
+                    <span class="text-boti-highlight font-semibold block">Bahan & Pewarna Alami:</span>
+                    <p id="ins-dye" class="text-boti-cream/90 mt-0.5"></p>
+                </div>
+                <div>
+                    <span class="text-boti-highlight font-semibold block">Penggunaan Adat:</span>
+                    <p id="ins-usage" class="text-boti-cream/90 mt-0.5"></p>
+                </div>
+            </div>
+
+            <button onclick="toggleModal('inspector-modal')" class="w-full py-2 bg-boti-ochre hover:bg-boti-amber text-boti-cream text-xs font-bold rounded-lg transition">
+                Tutup Inspector
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // State Management for Anti-Disorientation Navigation
+        const nodeMap = {
+            'home': { name: 'Beranda', icon: 'fa-house' },
+            'profil': { name: 'Profil & Sejarah', icon: 'fa-landmark' },
+            'falsafah': { name: 'Falsafah & Tradisi', icon: 'fa-yin-yang' },
+            'tenun': { name: 'Motif Tenun', icon: 'fa-scroll' },
+            'audio': { name: 'Audio Bahasa Dawan', icon: 'fa-volume-high' },
+            'peta': { name: 'Peta Interaktif', icon: 'fa-map-marked-alt' }
+        };
+
+        let currentActiveNode = 'home';
+        let navigationHistory = ['home'];
+
+        // Initial Load
+        window.onload = function() {
+            updateBreadcrumbs();
+        };
+
+        // Non-Linear Router Function
+        function navigateTo(nodeId) {
+            if (!nodeMap[nodeId]) return;
+
+            // Hide all sections
+            const sections = document.querySelectorAll('.node-section');
+            sections.forEach(sec => sec.classList.add('hidden'));
+
+            // Show selected node section
+            const target = document.getElementById('node-' + nodeId);
+            if (target) {
+                target.classList.remove('hidden');
+            }
+
+            // Update state history
+            currentActiveNode = nodeId;
+            if (navigationHistory[navigationHistory.length - 1] !== nodeId) {
+                navigationHistory.push(nodeId);
+                if (navigationHistory.length > 5) navigationHistory.shift(); // keep max 5
+            }
+
+            updateBreadcrumbs();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Dynamic Breadcrumb Rendering (Anti-Lost in Hyperspace)
+        function updateBreadcrumbs() {
+            const container = document.getElementById('breadcrumb-list');
+            const mobileContainer = document.getElementById('mobile-breadcrumb-list');
+            
+            let html = `
+                <li>
+                    <button onclick="navigateTo('home')" class="text-boti-cream/70 hover:text-boti-highlight transition flex items-center gap-1">
+                        <i class="fa-solid fa-house text-xs"></i>
+                        <span>Home</span>
+                    </button>
+                </li>
+            `;
+
+            if (currentActiveNode !== 'home') {
+                const currentNodeInfo = nodeMap[currentActiveNode];
+                html += `
+                    <li class="text-boti-border"><i class="fa-solid fa-chevron-right text-[10px]"></i></li>
+                    <li class="text-boti-highlight font-bold flex items-center gap-1">
+                        <i class="fa-solid ${currentNodeInfo.icon} text-xs"></i>
+                        <span>${currentNodeInfo.name}</span>
+                    </li>
+                `;
+            }
+
+            container.innerHTML = html;
+            mobileContainer.innerHTML = html;
+        }
+
+        // Generic Modal Toggle
+        function toggleModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.toggle('hidden');
+            }
+        }
+
+        // Motif Inspector Feature
+        function inspectMotif(title, philosophy, dye, usage) {
+            document.getElementById('ins-title').innerText = title;
+            document.getElementById('ins-philosophy').innerText = philosophy;
+            document.getElementById('ins-dye').innerText = dye;
+            document.getElementById('ins-usage').innerText = usage;
+            toggleModal('inspector-modal');
+        }
+
+        // Audio Native Simulation Player
+        let activeAudioText = 'Tabe, Salama Onu';
+
+        function selectAudio(phrase, indonesian, phonetic) {
+            activeAudioText = phrase;
+            document.getElementById('current-phrase-title').innerText = `${phrase} (${phonetic})`;
+            document.getElementById('current-phrase-trans').innerText = `Terjemahan: "${indonesian}"`;
+            playCurrentAudio();
+        }
+
+        function playCurrentAudio() {
+            const btnIcon = document.getElementById('play-icon');
+            btnIcon.className = "fa-solid fa-spinner fa-spin";
+
+            // Web Speech API Synthesis Simulation for Native Text-to-Speech
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(activeAudioText);
+                utterance.lang = 'id-ID'; // Indonesian accent approximation for Dawan
+                utterance.rate = 0.85; // Slow for clear pronunciation
+                
+                utterance.onend = function() {
+                    btnIcon.className = "fa-solid fa-play";
+                };
+
+                speechSynthesis.speak(utterance);
+            } else {
+                setTimeout(() => {
+                    btnIcon.className = "fa-solid fa-play";
+                }, 1200);
+            }
+        }
+
+        function simulateAITranslator() {
+            const userInput = prompt("Masukkan kata/frase Bahasa Indonesia untuk diterjemahkan ke simulasi Bahasa Dawan Boti:", "Selamat Pagi");
+            if (userInput) {
+                alert(`[Simulasi NMT AI Translator]\n\nBahasa Indonesia: "${userInput}"\nHasil Terjemahan Dawan Boti: "Nekaf Mese, ${userInput} (Uab Meto Accent)"`);
+            }
+        }
+
+        // Interactive Map Details Switcher
+        function showMapPinInfo(title, desc) {
+            document.getElementById('map-pin-title').innerText = title;
+            document.getElementById('map-pin-desc').innerText = desc;
+        }
+    </script>
+</body>
+</html>
